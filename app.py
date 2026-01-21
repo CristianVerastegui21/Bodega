@@ -25,6 +25,8 @@ def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+    return sqlite3.connect("bodega.db")
+
 
 N8N_WEBHOOK_URL = "http://localhost:5678/webhook/alerta"
 
@@ -102,6 +104,27 @@ def verificar_stock():
 
     conn.close()
 
+def init_db():
+    conn = get_db()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS productos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            categoria TEXT NOT NULL,
+            precio REAL NOT NULL,
+            stock INTEGER NOT NULL,
+            stock_minimo INTEGER NOT NULL,
+            activo INTEGER DEFAULT 1,
+            alertado INTEGER DEFAULT 0
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+
+# 🔥 ESTO ES LO CLAVE
+with app.app_context():
+    init_db()
 
 
 @app.route("/")
@@ -254,5 +277,9 @@ def tienda():
     return render_template("tienda.html", productos=productos)
 
 
+   #if __name__ == "__main__":
+   #app.run(debug=True)
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
