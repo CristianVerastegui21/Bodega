@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nuevo Producto</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<div class="form-container">
+  <div class="form-card">
+    <h2>{{ '✏️ Editar Producto' if editar else '➕ Nuevo Producto' }}</h2>
+    <p class="subtitle">Registrar producto en la bodega</p>
+
+    <form method="POST">
+
+      <label>Nombre del producto</label>
+      <input type="text" name="nombre"
+       value="{{ producto.nombre if editar else '' }}"
+       required>
+
+
+      <label>Categoría</label>
+      <select name="categoria" required>
+        <option value="">Seleccionar</option>
+        {% for c in ["Abarrotes","Bebidas","Cervezas","Lácteos","Snacks","Panadería","Útiles del hogar"] %}
+          <option value="{{ c }}"
+            {% if editar and producto.categoria == c %}selected{% endif %}>
+            {{ c }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <label>Precio (S/)</label>
+      <input type="number" step="0.01" name="precio"
+       value="{{ producto.precio if editar else '' }}" required>
+
+      <label>Stock actual</label>
+      <input type="number" name="stock"
+       value="{{ producto.stock if editar else '' }}" required>
+
+      <label>Stock mínimo</label>
+      <input type="number" name="stock_minimo"
+       value="{{ producto.stock_minimo if editar else '' }}" required>
+
+
+      <button type="submit">💾 Guardar Producto</button>
+
+      <a href="/admin/dashboard" class="btn-back">⬅ Volver</a>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>

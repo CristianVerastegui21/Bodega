@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard | Bodega</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    🏪 <span>Bodega Admin</span>
+  </div>
+  <div class="user">
+    Administrador
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="card">
+    <div class="card-header">
+      <h2>📦 Productos</h2>
+      <a href="/admin/fotos" class="btn">🖼️ Agregar foto</a>
+
+      <a href="/admin/producto/nuevo" class="btn btn-primary">
+        + Nuevo producto
+      </a>
+      
+    </div>
+
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Categoría</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for p in productos %}
+        <tr class="{% if p.stock <= p.stock_minimo %}low-stock{% endif %}">
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.categoria }}</td>
+          <td>S/ {{ "%.2f"|format(p.precio) }}</td>
+          <td>
+            <span class="stock">{{ p.stock }}</span>
+          </td>
+          <td>
+            <a href="/admin/producto/editar/{{ p.id }}" class="icon edit">✏️</a>
+            <a href="/admin/producto/eliminar/{{ p.id }}"
+               class="icon delete"
+               onclick="return confirm('¿Eliminar este producto?')">🗑️</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+</body>
+</html>

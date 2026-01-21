@@ -1,0 +1,107 @@
+{
+  "name": "Stock Alert Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "stock_alerta",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "Webhook1",
+      "name": "Webhook - Stock Alerta",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const alertas = items[0].json;\nif (!Array.isArray(alertas) || alertas.length === 0) {\n  return [{ json: { message: '✅ No hay productos con stock bajo.' } }];\n}\n\nlet mensaje = '⚠️ ALERTA DE STOCK BAJO\\n\\n';\nfor (const p of alertas) {\n  mensaje += `${p.codigo} - ${p.descripcion} | Stock: ${p.stock} (Reorden: ${p.reorden})\\n`;\n}\nreturn [{ json: { message: mensaje } }];"
+      },
+      "id": "Function1",
+      "name": "Formatear Mensaje",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "alertas@almacen.com",
+        "toEmail": "tu_correo@dominio.com",
+        "subject": "🚨 Alerta de Stock Bajo",
+        "text": "={{$json[\"message\"]}}",
+        "options": {}
+      },
+      "id": "Email1",
+      "name": "Enviar Correo",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": {
+        "smtp": {
+          "id": "SMTP_Almacenes",
+          "name": "SMTP_Almacenes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "statusCode": 200,
+        "responseBody": "={ $json[\"message\"] }"
+      },
+      "id": "RespondWebhook1",
+      "name": "Responder a Streamlit",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1150, 300]
+    }
+  ],
+  "connections": {
+    "Webhook - Stock Alerta": {
+      "main": [
+        [
+          {
+            "node": "Formatear Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear Mensaje": {
+      "main": [
+        [
+          {
+            "node": "Enviar Correo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Correo": {
+      "main": [
+        [
+          {
+            "node": "Responder a Streamlit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "stock"
+    },
+    {
+      "name": "alerta"
+    }
+  ],
+  "id": "stock_alerta_workflow"
+}

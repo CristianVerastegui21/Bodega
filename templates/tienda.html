@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Bodega | Productos</title>
+  <link rel="stylesheet" href="/static/tienda.css">
+</head>
+<body>
+
+<header class="tienda-header">
+  <h1>🛒 Nuestra Bodega</h1>
+  <input type="text" id="buscador" placeholder="Buscar producto...">
+</header>
+
+<div class="filtros">
+  <button onclick="filtrar('Todos')">Todos</button>
+  <button onclick="filtrar('Abarrotes')">Abarrotes</button>
+  <button onclick="filtrar('Bebidas')">Bebidas</button>
+  <button onclick="filtrar('Cervezas')">Cervezas</button>
+  <button onclick="filtrar('Lácteos')">Lácteos</button>
+  <button onclick="filtrar('Snacks')">Snacks</button>
+</div>
+
+<div class="productos" id="productos">
+  {% for p in productos %}
+  <div class="producto-card" data-categoria="{{ p.categoria }}">
+    <h3>{{ p.nombre }}</h3>
+    <p class="categoria">{{ p.categoria }}</p>
+    <p class="precio">S/ {{ p.precio }}</p>
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+function filtrar(cat) {
+  document.querySelectorAll(".producto-card").forEach(p => {
+    p.style.display = (cat === "Todos" || p.dataset.categoria === cat)
+      ? "block" : "none";
+  });
+}
+
+document.getElementById("buscador").addEventListener("keyup", function () {
+  const texto = this.value.toLowerCase();
+  document.querySelectorAll(".producto-card").forEach(p => {
+    p.style.display = p.innerText.toLowerCase().includes(texto)
+      ? "block" : "none";
+  });
+});
+</script>
+
+</body>
+</html>
